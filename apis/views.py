@@ -7,9 +7,9 @@ from django.db import IntegrityError
 from django.core.validators import validate_email,ValidationError
 from django.contrib.auth import authenticate,login
 
-class BaseView(view):
+class BaseView(View):
     @staticmethod
-    def response(data={},message,status=200):
+    def response(data={},message='',status=200):
         result ={
             'data':data,
             'message':message,
@@ -25,8 +25,13 @@ class UserCreateView(BaseView):
         username=request.POST.get('username','')
         if not username:
             return self.response(message='아이디를 입력해 주세요',status=400)
+
         password=request.POST.get('password','')
+        if not password:
+            return self.response(message='비밀번호를 입력해 주세요',status=400)
+
         email=request.POST.get('email','')
+        if not email:
             return self.response(message='올바른 이메일을 입력해주세요.',status=400)
 
         try:
@@ -42,12 +47,12 @@ class UserLoginView(BaseView):
         if not username:
             return self.response(message='아이디를 입력해주세요',status=400)
         password=request.POST.get('password','')
-        if fnot password:
+        if not password:
             return self.response(message='비밀번호를 입력해주세요.',status=400)
 
         user=authenticate(request,username=username,password=password)
         if user is None:
             return self.response(message='입력 정보를 확인해주세요.',status=400)
-        login(request,user)
+        login(request,user) 
 
         return self.response
